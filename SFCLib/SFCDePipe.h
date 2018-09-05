@@ -151,6 +151,8 @@ public:
 
 				if (strlen(buf) == 0) break; // no more data
 
+				pItem->pPtsArray[i].nDims = nDimsR; //other attributes
+
 				lastpos = buf;
 				pch = strchr(buf, ',');
 				while (pch != NULL)
@@ -354,8 +356,8 @@ public:
 	}
 };
 
-template<int nDims, int mBits, int nDimsR>//this first dim is for decoding dims, the second dims are for other attributes
-int run_decode_pipeline(int nthreads, char* InputFileName, char* OutputFileName, \
+//template<int nDims, int mBits, int nDimsR>//this first dim is for decoding dims, the second dims are for other attributes
+int run_decode_pipeline(int nDims, int mBits, int nDimsR, int nthreads, char* InputFileName, char* OutputFileName, \
 	int item_num, int sfc_type, int conv_type, double* delta, double* scale)
 {
 	FILE* input_file = NULL;

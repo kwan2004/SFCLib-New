@@ -157,6 +157,8 @@ public:
 
 			if (strlen(buf) == 0) break; // no more data
 
+			pItem->pPtsArray[i].nDims = nDims; //set point data dimension
+
 			lastpos = buf;
 			pch = strchr(buf, ',');			
 			while (pch != NULL)

@@ -110,7 +110,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>D:\projects\tbb20170604\include;D:\projects\boost_1_59_0;..\SFCLib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\projects\tbb20180618\include;D:\projects\boost_1_59_0;..\SFCLib</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

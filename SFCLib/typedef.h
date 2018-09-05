@@ -4,6 +4,8 @@
 #include <boost/multiprecision/cpp_int.hpp>
 using namespace boost::multiprecision;
 
+#define DIM_MAX 40
+
 typedef enum
 {
 	Base32,

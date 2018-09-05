@@ -53,12 +53,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\projects\tbb20170604\include;D:\projects\boost_1_59_0;..\SFCLib</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\projects\tbb20180618\include;D:\projects\boost_1_59_0;..\SFCLib</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\projects\tbb20170604\lib\ia32\vc14</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\projects\tbb20180618\lib\ia32\vc14</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

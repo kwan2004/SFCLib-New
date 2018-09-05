@@ -7,8 +7,8 @@ template<typename T1, typename T2>//, int nDims = 2
 class CoordTransform
 {
 private:
-	std::vector< T1 > _delta;//, nDims
-	std::vector< T1 > _scale;//, nDims
+	std::array< T1 , DIM_MAX> _delta;//, nDims at most 40 dimensions
+	std::array< T1 , DIM_MAX> _scale;//, nDims at most 40 dimensions
 
 	int nDims;
 
@@ -18,6 +18,7 @@ private:
 public:
 	CoordTransform(int dims)
 	{
+		nDims = dims;
 		for (int i = 0; i < nDims; i++)
 		{
 			_delta[i] = 0;

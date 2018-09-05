@@ -47,8 +47,8 @@ void print_ranges(char * str, vector<sfc_bigint>& ranges)
 int main(int argc, char* argv[])
 {
 	//here the SFCQuery tool
-	const int ndims = 4;
-	const int mbits = 20;
+	int ndims = 4;
+	int mbits = 20;
 
 	///-i 347068810/347068850/-73.96/-73.91/40.5/41/-73.99/-73.90/40.5/41 -s 1 -e 0 -t ./cttaxi.txt -n 2000 -k 4 -o range.sql
 
@@ -76,6 +76,20 @@ int main(int argc, char* argv[])
 
 	for (int i = 1; i < argc; i++)
 	{
+		if (strcmp(argv[i], "-n") == 0)//dimension number
+		{
+			i++;
+			ndims = atoi(argv[i]);
+			continue;
+		}
+
+		if (strcmp(argv[i], "-m") == 0)//sfc level number
+		{
+			i++;
+			mbits = atoi(argv[i]);
+			continue;
+		}
+
 		if (strcmp(argv[i], "-i") == 0)//input filter coordinates
 		{
 			i++;
@@ -110,7 +124,7 @@ int main(int argc, char* argv[])
 			strcpy(sztransfile, argv[i]);
 			continue;
 		}
-		if (strcmp(argv[i], "-n") == 0)//number of return ranges
+		if (strcmp(argv[i], "-N") == 0)//number of return ranges
 		{
 			i++;
 			nranges = atoi(argv[i]);
@@ -138,8 +152,8 @@ int main(int argc, char* argv[])
 
 	///////////////////////////////////////////////////
 	///get the coordinates transfomration file--one more for lod value
-	double delta[ndims + 1] = { 0 }; // 526000, 4333000, 300
-	double  scale[ndims + 1] = { 1 }; //100, 100, 1000
+	double delta[DIM_MAX + 1] = { 0 }; // 526000, 4333000, 300
+	double  scale[DIM_MAX + 1] = { 1 }; //100, 100, 1000
 
 	for (int i = 1; i < ndims + 1; i++)
 	{
@@ -206,10 +220,10 @@ int main(int argc, char* argv[])
 	cotrans.SetTransform(delta, scale);
 	////////////////////////////////////////////////
 	//get the input filter
-	double pt1[ndims] = { 0.0f };
-	double pt2[ndims] = { 0.0f };
+	double pt1[DIM_MAX] = { 0.0f };
+	double pt2[DIM_MAX] = { 0.0f };
 
-	unsigned int dim_valid[ndims] = { 0 };
+	unsigned int dim_valid[DIM_MAX] = { 0 };
 
 	memset(pt1, 0, sizeof(double)*ndims);
 	memset(pt2, 0, sizeof(double)*ndims);

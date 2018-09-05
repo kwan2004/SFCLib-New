@@ -28,8 +28,8 @@ int main(int argc, char* argv[])
 	//if (argc == 1) return 0;
 	//if (argc % 2 != 1) return 0; //attribute pair plus exe_name	
 
-	const int ndims = 3;
-	const int mbits = 13;
+	int ndims = 3;
+	int mbits = 13;
 
 	//-p 0 -s 1 -e 2 -t ct.txt -l 10 -i ahn2.txt -o ee.txt 
 	int nparallel = 0;
@@ -50,6 +50,20 @@ int main(int argc, char* argv[])
 
 	for (int i = 1; i < argc; i++)
 	{
+		if (strcmp(argv[i], "-n") == 0)//dimension number
+		{
+			i++;
+			ndims = atoi(argv[i]);
+			continue;
+		}
+
+		if (strcmp(argv[i], "-m") == 0)//sfc level number
+		{
+			i++;
+			mbits = atoi(argv[i]);
+			continue;
+		}
+
 		if (strcmp(argv[i], "-p") == 0)//if parallel: 0 sequential, 1 max parallel
 		{
 			i++;
@@ -106,7 +120,7 @@ int main(int argc, char* argv[])
 			lod_levels = atoi(argv[i]);
 			continue;
 		}
-		if (strcmp(argv[i], "-n") == 0)//if points number per chunk during parallel
+		if (strcmp(argv[i], "-c") == 0)//if points number per chunk during parallel
 		{
 			i++;
 			nitem_num = atoi(argv[i]);
@@ -116,8 +130,8 @@ int main(int argc, char* argv[])
 
 	///////////////////////////////////////////////////
 	///get the coordinates transfomration file--one more for lod value
-	double delta[ndims + 1] = { 0 }; // 526000, 4333000, 300
-	double  scale[ndims + 1] = { 1 }; //100, 100, 1000
+	double delta[DIM_MAX + 1] = { 0 }; // 526000, 4333000, 300 //dims at most 20 dimension
+	double  scale[DIM_MAX + 1] = { 1 }; //100, 100, 1000
 
 	for (int i = 1; i < ndims + 1; i++)
 	{

@@ -2,7 +2,7 @@
 #ifndef POINT_H_
 #define POINT_H_
 
-#include <vector>            // std::array
+#include <array>            // std::array
 #include "typedef.h"
 
 using namespace std;
@@ -13,23 +13,33 @@ template< typename T>//, int nDims=2
 class Point
 {
 private:
-	//std::array< T, nDims > elements_;
-	vector<T> elements_;
+	std::array< T, DIM_MAX > elements_; //2nDims at most 40 dimensions
+	//vector<T> elements_;
 	
 	int bitLength=64; //length means the input m or the output n
 
 public:
 	int nDims;
-	typedef T ValueType;
+	//typedef T ValueType;
 
 	Point():nDims(0)
 	{
 
 	}
 
-	Point (std::size_t dims) : elements_(dims, 0), nDims(dims)
+	int returnSize() const
 	{
+		//return this->elements_.size();
+		return nDims;
+	}
 
+	Point (std::size_t dims) 
+	{
+		nDims = dims;
+		for (int i = 0; i < nDims; ++i)
+		{
+			elements_[i] = 0;
+		}
 	}
 
 	T& operator[](int const i)
@@ -44,6 +54,8 @@ public:
 
 	void operator+=(Point const& other)
 	{
+		nDims = other.returnSize();
+
 		for (int i = 0; i < nDims; ++i)
 		{
 			elements_[i] += other.elements_[i];
@@ -53,6 +65,8 @@ public:
 
 	void operator=(Point const& other)
 	{
+		nDims = other.returnSize();
+		
 		for (int i = 0; i < nDims; ++i)
 		{
 			elements_[i] = other.elements_[i];
@@ -61,6 +75,8 @@ public:
 
 	void operator-=(Point const& other)
 	{
+		nDims = other.returnSize();
+
 		for (int i = 0; i < nDims; ++i)
 		{
 			elements_[i] -= other.elements_[i];
@@ -83,10 +99,7 @@ public:
 		return ret;
 	}
 
-	int returnSize()
-	{
-		return this->elements_.size();
-	}
+	
 
 	//set the input  m or the output n 
 	void getBitLength(int bitLength)
@@ -126,14 +139,14 @@ public:
 		}
 	}
 
-	Point(const Point & points)
+	/*Point(const Point & points)
 	{
-		//this->nDims = points.returnSize();
+		points->returnSize();
 		for (int i = 0; i < nDims; i++)
 		{
 			elements_[i] = points[i];
 		}
-	}
+	}*/
 
 	T getElements(int i)
 	{ 

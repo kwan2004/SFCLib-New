@@ -15,10 +15,10 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	const int ndims = 3;//dims for decoding
-	const int mbits = 13;
+	int ndims = 3;//dims for decoding
+	int mbits = 13;
 
-	const int ndimsR = 0; //dims for other attributes
+	int ndimsR = 0; //dims for other attributes
 
 	int nparallel = 0;
 	int nitem_num = 5000;
@@ -32,6 +32,27 @@ int main(int argc, char *argv[])
 
 	for (int i = 1; i < argc; i++)
 	{
+		if (strcmp(argv[i], "-n") == 0)//dimension number
+		{
+			i++;
+			ndims = atoi(argv[i]);
+			continue;
+		}
+
+		if (strcmp(argv[i], "-m") == 0)//sfc level number
+		{
+			i++;
+			mbits = atoi(argv[i]);
+			continue;
+		}
+
+		if (strcmp(argv[i], "-r") == 0)//dims for other attributes
+		{
+			i++;
+			ndimsR = atoi(argv[i]);
+			continue;
+		}
+
 		if (strcmp(argv[i], "-p") == 0)//if parallel: 0 sequential, 1 max parallel
 		{
 			i++;
@@ -77,8 +98,8 @@ int main(int argc, char *argv[])
 
 	///////////////////////////////////////////////////
 	///get the coordinates transfomration file--one more for lod value
-	double delta[ndims + 1] = { 0 }; // 526000, 4333000, 300
-	double  scale[ndims + 1] = { 1 }; //100, 100, 1000
+	double delta[DIM_MAX + 1] = { 0 }; // 526000, 4333000, 300 //ndims
+	double  scale[DIM_MAX + 1] = { 1 }; //100, 100, 1000
 
 	for (int i = 1; i < ndims + 1; i++)
 	{
@@ -148,7 +169,8 @@ int main(int argc, char *argv[])
 		if (strlen(szoutput) != 0) printf("serial run   "); //if not stdout ,print sth
 		tbb::task_scheduler_init init_serial(1);
 
-		run_decode_pipeline<ndims, mbits, ndimsR>(1, szinput, szoutput, nitem_num, nsfc_type, nencode_type, delta, scale);
+		//run_decode_pipeline<ndims, mbits, ndimsR>(1, szinput, szoutput, nitem_num, nsfc_type, nencode_type, delta, scale);
+		run_decode_pipeline(ndims, mbits, ndimsR, 1, szinput, szoutput, nitem_num, nsfc_type, nencode_type, delta, scale);
 
 	}
 
@@ -157,9 +179,12 @@ int main(int argc, char *argv[])
 		if (strlen(szoutput) != 0)  printf("parallel run "); //if not stdout ,print sth
 		tbb::task_scheduler_init init_parallel(tbb::task_scheduler_init::automatic);
 
-		run_decode_pipeline<ndims, mbits, ndimsR>(init_parallel.default_num_threads(), szinput, szoutput, nitem_num, nsfc_type, \
+		//run_decode_pipeline<ndims, mbits, ndimsR>(init_parallel.default_num_threads(), szinput, szoutput, nitem_num, nsfc_type, \
+			nencode_type, delta, scale);
+		run_decode_pipeline(ndims, mbits, ndimsR, init_parallel.default_num_threads(), szinput, szoutput, nitem_num, nsfc_type, \
 			nencode_type, delta, scale);
 	}
+	
 	//system("pause");
 	return 0;
 
