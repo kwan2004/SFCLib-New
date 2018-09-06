@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
 
 	int ndimsR = 0; //dims for other attributes
 
+	////////////////////////////
 	int nparallel = 0;
 	int nitem_num = 5000;
 

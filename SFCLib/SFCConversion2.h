@@ -206,14 +206,14 @@ public:
 
 	sfc_bigint HilbertEncode(Point<long> ptCoord)
 	{	
-		bitmask_t pt[10]; //nDims<<10
+		bitmask_t pt[DIM_MAX]; //nDims<<10
 		for (int i = 0; i < nDims; i++) pt[i] = ptCoord[i];
 
 		return hilbert_c2i(pt);
 	}
 	Point<long> HilbertDecode(sfc_bigint idx)
 	{
-		bitmask_t pt[10]; //nDims<<10
+		bitmask_t pt[DIM_MAX]; //nDims<<10
 		hilbert_i2c(idx, pt);
 
 		Point<long> newpt(nDims);
@@ -223,7 +223,7 @@ public:
 
 	sfc_bigint MortonEncode(Point<long> ptCoord)
 	{
-		bitmask_t pt[10]; //nDims<<10
+		bitmask_t pt[DIM_MAX]; //nDims<<10
 		for (int i = 0; i < nDims; i++) pt[i] = ptCoord[i];
 
 		//val |= ((x & ((uint64_t)1 << i)) << 3 * i) | ((y & ((uint64_t)1 << i)) << (3 * i + 1)) | ((z & ((uint64_t)1 << i)) << (3* i + 2));
@@ -241,7 +241,7 @@ public:
 	
 	Point<long> MortonDecode(sfc_bigint idx)
 	{
-		bitmask_t pt[10]; //nDims<<10
+		bitmask_t pt[DIM_MAX]; //nDims<<10
 		//hilbert_i2c(idx, pt);
 		unsigned int mask = ((unsigned int)1 << nDims) - 1;
 		for (int i = 0; i < mBits; i++)

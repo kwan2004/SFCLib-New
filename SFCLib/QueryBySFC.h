@@ -305,7 +305,7 @@ void QueryBySFC<T>::query_approximate2(TreeNode<T> nd, Rect<T> queryrect, vector
 	typedef tuple<TreeNode<T>, Rect<T>> NRTuple;
 	queue<NRTuple> query_queue;
 
-	TreeNode<T> nchild=nd;
+	TreeNode<T> nchild;//=nd
 	int res, last_level;
 	///////////////////////////////////////////
 	//queue the root node
@@ -380,7 +380,7 @@ void QueryBySFC<T>::query_approximate2(TreeNode<T> nd, Rect<T> queryrect, vector
 		}
 
 		int ncount = 1;
-		//qrtcut[0] = qrt;
+		qrtcut[0] = qrt;
 
 		Point<T> pttmp(nDims);  //temporary point or corner
 		for (int i = 0; i < nDims; i++)  //dimension iteration
@@ -444,8 +444,10 @@ vector<sfc_bigint>  QueryBySFC<T>::RangeQueryByRecursive_LNG(Rect<T> queryrect, 
 	TreeNode<T> root;  //root node
 	root.level = 0;
 	root.nDims = nDims;
+
+	root.minPoint.nDims = root.maxPoint.nDims = nDims;
 	for (int i = 0; i < nDims; i++)
-	{
+	{		
 		root.minPoint[i] = 0;
 		root.maxPoint[i] = 1 << mBits;
 		
@@ -464,8 +466,8 @@ vector<sfc_bigint>  QueryBySFC<T>::RangeQueryByRecursive_LNG(Rect<T> queryrect, 
 	//cout << resultTNode.size() << endl;
 
 	int ncorners = 1 << nDims; //corner points number
-	vector<Point<T>> nodePoints(ncorners);
-	vector<sfc_bigint> node_vals(ncorners);
+	//vector<Point<T>> nodePoints(ncorners);
+	//vector<sfc_bigint> node_vals(ncorners);
 
 	map<sfc_bigint, sfc_bigint, less<sfc_bigint>> map_range;
 	map<sfc_bigint, sfc_bigint, less<sfc_bigint>>::iterator itr;

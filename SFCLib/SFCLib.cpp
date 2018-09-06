@@ -161,7 +161,7 @@ int main(int argc, char* argv[])
 	///3D case
 	Point<long> pt3d(3); //SFC coordinates n=2
 
-	//SFCConversion2<3, 3> sfc3d;
+	SFCConversion2 sfc3d(3, 3);
 	SFCConversion sfc3d_old(3, 3);
 	//OutputSchema2<2, 4> trans;
 
@@ -175,8 +175,8 @@ int main(int argc, char* argv[])
 				pt3d[1] = j;//j
 				pt3d[2] = k;//k
 
-				sfc_bigint outval = sfc3d_old.HilbertEncode(pt3d);
-				pt3d = sfc3d_old.HilbertDecode(outval);
+				sfc_bigint outval = sfc3d.HilbertEncode(pt3d);
+				pt3d = sfc3d.HilbertDecode(outval);
 				cout << i << ", " << j << ", " << k << "---M-->" << outval << "----->" << pt3d[0] << ", " << pt3d[1] << ", " <<  pt3d[2]<<endl; //
 			}
 		}
@@ -262,7 +262,7 @@ int main(int argc, char* argv[])
 	////2D case 16*16, i.e n=2, m=4
 	Point<long> ptCoord(2); //SFC coordinates n=2
 
-	SFCConversion sfc(2, 4);
+	SFCConversion2 sfc(2, 4);
 	OutputSchema2  trans(2, 4);
 
 	SFCConversion sfc_old(2, 4);
@@ -302,7 +302,7 @@ int main(int argc, char* argv[])
 	}
 
 	SFCConversion sfc_a(4, 6);
-	SFCConversion  sfc_b(4, 6);
+	SFCConversion2  sfc_b(4, 6);
 	Point<long> pta = sfc_a.HilbertDecode(476);
 	Point<long> ptb = sfc_b.HilbertDecode(476);
 
@@ -325,7 +325,7 @@ int main(int argc, char* argv[])
 	pt3[3] = 11;//1101
 	pt3[4] = 10; //0101
 
-	SFCConversion sfc2(5, 30);
+	SFCConversion2 sfc2(5, 30);
 	sfc_bigint val = sfc2.HilbertEncode(pt3);	
 
 	cout << "butz--" << val << "," << val_old << endl;
