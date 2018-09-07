@@ -8,7 +8,7 @@
 
 #include "SFCConversion.h"
 //#include "OutputSchema.h"
-#include "QueryBySFC.h"
+#include "QueryBySFC2.h"
 
 #include "SFCPipeline.h"
 

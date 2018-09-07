@@ -91,6 +91,7 @@
     <ClInclude Include="OutputSchema2.h" />
     <ClInclude Include="Point.h" />
     <ClInclude Include="QueryBySFC.h" />
+    <ClInclude Include="QueryBySFC2.h" />
     <ClInclude Include="RandomLOD.h" />
     <ClInclude Include="Rectangle.h" />
     <ClInclude Include="SFCConversion.h" />
