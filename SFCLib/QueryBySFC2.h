@@ -167,7 +167,7 @@ public:
 	int nDims;
 	int mBits;
 private:
-	void query_approximate(TreeNode<T> nd, Rect<T> queryrect, vector<TreeNode<T>>& resultTNode);
+	//void query_approximate(TreeNode<T> nd, Rect<T> queryrect, vector<TreeNode<T>>& resultTNode);
 	void query_approximate2(TreeNode<T> nd, Rect<T> queryrect, vector<TreeNode<T>>& resultTNode, int nranges, int ktimes);
 
 public:
@@ -179,122 +179,122 @@ public:
 	//vector<string>  RangeQueryByBruteforce_STR(Rect<T, nDims> queryRect, SFCType sfc_type, StringType encode_type);
 	//vector<string>  RangeQueryByRecursive_STR(Rect<T, nDims> queryrect, SFCType sfc_type, StringType encode_type, int nranges, int ktimes);
 
-	QueryBySFC_S(int dims, int bits):nDims(dims), mBits(bits)
+	QueryBySFC_S(int dims, int bits) :nDims(dims), mBits(bits)
 	{	}
 
-	
+
 };
-
-///depth-first traversal in the 2^n-ary tree
-template<typename T>//, int nDims, int mBits
-//void QueryBySFC<T, nDims, mBits>::query_approximate(TreeNode<T> nd, Rect<T> queryrect, vector<TreeNode<T, nDims>>& resultTNode)
-void QueryBySFC_S<T>::query_approximate(TreeNode<T> nd, Rect<T> queryrect, vector<TreeNode<T>>& resultTNode)
-{
-
-	/*
-	divide current tree node
-	*/
-	int nary_num = 1 << nDims;  //max count: 2^nDims
-	vector<TreeNode<T>> nchild(nary_num);
-	/*
-	find the currentnode exactly contains queryrectangle; and its child node intersects queryrectangle
-	*/
-	TreeNode<T> currentNode = nd;
-	int res = 1;
-	do
-	{
-		for (int i = 0; i < nary_num; i++)
-		{
-			nchild[i] = currentNode.GetChildNode(i);
-			if (nchild[i].Spatialrelationship(queryrect) == 0)  //equal: stop
-			{
-				resultTNode.push_back(nchild[i]);
-				return ;
-			}
-			else if (nchild[i].Spatialrelationship(queryrect) == 2)  //intersect: divide queryrectangle
-			{
-				res = 0;
-				break;
-			}
-			else  if (nchild[i].Spatialrelationship(queryrect) == 1)//contain: divide the tree node
-			{
-				currentNode = nchild[i];
-				break;
-			}
-		}
-	} while (res);
-
-	
-	/*
-	divide the input query rectangle into even parts, e.g. 2 or 4 parts
-	0~3 for 2d; upper 2|3----10|11;----- YX for 2D, ZYX for 3D, TZYX for 4D--each dim one bit
-	            lower 0|1----00|01 ------one dim: less = 0; greater = 1
-	*/
-	
-	vector<Rect<T>> qrtcut(nary_num);  //2^nDims parts
-	vector<int> qrtpos(nary_num);  //the qrtcut corresponds to treenode
-	for (int i = 0; i < nary_num; i++)
-	{
-		qrtpos[i] = 0;
-	}
-	vector<int> mid(nDims);  //middle cut line--dim number
-	for (int i = 0; i < nDims; i++)
-	{
-		mid[i] = (currentNode.minPoint[i] + currentNode.maxPoint[i]) / 2;
-	}
-
-	int ncount = 1;
-	qrtcut[0] = queryrect;
-	
-	Point<T> pttmp(nDims);  //temporary point or corner
-	for (int i = 0; i < nDims; i++)  //dimension iteration
-	{
-		int newadd = 0;
-		for (int j = 0; j < ncount; j++)
-		{
-			if (qrtcut[j].minPoint[i] < mid[i] && qrtcut[j].maxPoint[i] > mid[i])
-			{
-				Rect<T> rtnew = qrtcut[j];
-				pttmp = rtnew.minPoint;
-				pttmp[i] = mid[i];
-				rtnew.SetMinPoint(pttmp);
-
-				pttmp = qrtcut[j].maxPoint;
-				pttmp[i] = mid[i];
-				qrtcut[j].SetMaxPoint(pttmp);
-
-				qrtpos[ncount + newadd] = (1 << i) + qrtpos[j];
-				qrtcut[ncount + newadd] = rtnew;
-
-				newadd++;
-			}
-
-			if (qrtcut[j].minPoint[i] >= mid[i])  //all bigger than the middle line
-			{
-				qrtpos[j] |= 1 << i;  //just update its position---put 1 on the dimension bit
-			}
-		}  //end for rect count
-
-		ncount += newadd;  //update all rectangle count
-	}  //end for dimension
-	
-	for (int i = 0; i < ncount; i++)   //final rect number 
-	{
-		TreeNode<T> cNode = currentNode.GetChildNode(qrtpos[i]);
-		int rec = cNode.Spatialrelationship(qrtcut[i]);
-		if (rec == 0)
-		{
-			resultTNode.push_back(cNode);  //equal
-		}
-		else if (rec == -1)
-		{
-		}
-		else
-		{
-			query_approximate(cNode, qrtcut[i], resultTNode);  //recursive query
-		}		
-	}
-}
+//
+/////depth-first traversal in the 2^n-ary tree
+//template<typename T>//, int nDims, int mBits
+////void QueryBySFC<T, nDims, mBits>::query_approximate(TreeNode<T> nd, Rect<T> queryrect, vector<TreeNode<T, nDims>>& resultTNode)
+//void QueryBySFC_S<T>::query_approximate(TreeNode<T> nd, Rect<T> queryrect, vector<TreeNode<T>>& resultTNode)
+//{
+//
+//	/*
+//	divide current tree node
+//	*/
+//	int nary_num = 1 << nDims;  //max count: 2^nDims
+//	vector<TreeNode<T>> nchild(nary_num);
+//	/*
+//	find the currentnode exactly contains queryrectangle; and its child node intersects queryrectangle
+//	*/
+//	TreeNode<T> currentNode = nd;
+//	int res = 1;
+//	do
+//	{
+//		for (int i = 0; i < nary_num; i++)
+//		{
+//			nchild[i] = currentNode.GetChildNode(i);
+//			if (nchild[i].Spatialrelationship(queryrect) == 0)  //equal: stop
+//			{
+//				resultTNode.push_back(nchild[i]);
+//				return ;
+//			}
+//			else if (nchild[i].Spatialrelationship(queryrect) == 2)  //intersect: divide queryrectangle
+//			{
+//				res = 0;
+//				break;
+//			}
+//			else  if (nchild[i].Spatialrelationship(queryrect) == 1)//contain: divide the tree node
+//			{
+//				currentNode = nchild[i];
+//				break;
+//			}
+//		}
+//	} while (res);
+//
+//	
+//	/*
+//	divide the input query rectangle into even parts, e.g. 2 or 4 parts
+//	0~3 for 2d; upper 2|3----10|11;----- YX for 2D, ZYX for 3D, TZYX for 4D--each dim one bit
+//	            lower 0|1----00|01 ------one dim: less = 0; greater = 1
+//	*/
+//	
+//	vector<Rect<T>> qrtcut(nary_num);  //2^nDims parts
+//	vector<int> qrtpos(nary_num);  //the qrtcut corresponds to treenode
+//	for (int i = 0; i < nary_num; i++)
+//	{
+//		qrtpos[i] = 0;
+//	}
+//	vector<int> mid(nDims);  //middle cut line--dim number
+//	for (int i = 0; i < nDims; i++)
+//	{
+//		mid[i] = (currentNode.minPoint[i] + currentNode.maxPoint[i]) / 2;
+//	}
+//
+//	int ncount = 1;
+//	qrtcut[0] = queryrect;
+//	
+//	Point<T> pttmp(nDims);  //temporary point or corner
+//	for (int i = 0; i < nDims; i++)  //dimension iteration
+//	{
+//		int newadd = 0;
+//		for (int j = 0; j < ncount; j++)
+//		{
+//			if (qrtcut[j].minPoint[i] < mid[i] && qrtcut[j].maxPoint[i] > mid[i])
+//			{
+//				Rect<T> rtnew = qrtcut[j];
+//				pttmp = rtnew.minPoint;
+//				pttmp[i] = mid[i];
+//				rtnew.SetMinPoint(pttmp);
+//
+//				pttmp = qrtcut[j].maxPoint;
+//				pttmp[i] = mid[i];
+//				qrtcut[j].SetMaxPoint(pttmp);
+//
+//				qrtpos[ncount + newadd] = (1 << i) + qrtpos[j];
+//				qrtcut[ncount + newadd] = rtnew;
+//
+//				newadd++;
+//			}
+//
+//			if (qrtcut[j].minPoint[i] >= mid[i])  //all bigger than the middle line
+//			{
+//				qrtpos[j] |= 1 << i;  //just update its position---put 1 on the dimension bit
+//			}
+//		}  //end for rect count
+//
+//		ncount += newadd;  //update all rectangle count
+//	}  //end for dimension
+//	
+//	for (int i = 0; i < ncount; i++)   //final rect number 
+//	{
+//		TreeNode<T> cNode = currentNode.GetChildNode(qrtpos[i]);
+//		int rec = cNode.Spatialrelationship(qrtcut[i]);
+//		if (rec == 0)
+//		{
+//			resultTNode.push_back(cNode);  //equal
+//		}
+//		else if (rec == -1)
+//		{
+//		}
+//		else
+//		{
+//			query_approximate(cNode, qrtcut[i], resultTNode);  //recursive query
+//		}		
+//	}
+//}
 
 ///breadth-first traversal in the 2^n-ary tree
 template<typename T>//, int nDims, int mBits
@@ -310,10 +310,10 @@ void QueryBySFC_S<T>::query_approximate2(TreeNode<T> nd, Rect<T> queryrect, vect
 	int res, last_level;
 	///////////////////////////////////////////
 	//queue the root node
-	query_queue.push(NRTuple(nd, queryrect));	
+	query_queue.push(NRTuple(nd, queryrect));
 	last_level = 0;
 
-	for (; !query_queue.empty(); query_queue.pop()) 
+	for (; !query_queue.empty(); query_queue.pop())
 	{
 		NRTuple currenttuple = query_queue.front();
 
@@ -341,6 +341,9 @@ void QueryBySFC_S<T>::query_approximate2(TreeNode<T> nd, Rect<T> queryrect, vect
 			for (int i = 0; i < nary_num; i++)
 			{
 				nchild = currentNode.GetChildNode(i);
+
+				///////////////////////////////////////////////////
+				///go down ,go down till the  query rect and the child are on the same scale : equal or intersect
 				if (nchild.Spatialrelationship(qrt) == 0)  //equal: stop
 				{
 					resultTNode.push_back(nchild);
@@ -361,11 +364,11 @@ void QueryBySFC_S<T>::query_approximate2(TreeNode<T> nd, Rect<T> queryrect, vect
 			}//end for nary children
 		} while (!res);
 
-	if (res == 1) continue; //here break to continue for (queue iteration)
-	//			
-	//	//divide the input query rectangle into even parts, e.g. 2 or 4 parts
-	//	//0~3 for 2d; upper 2|3----10|11;----- YX for 2D, ZYX for 3D, TZYX for 4D--each dim one bit
-	//	//0~3 for 2d; lower 0|1----00|01 ------one dim: less = 0; greater = 1		
+		if (res == 1) continue; //here break to continue for (queue iteration)
+		//			
+		//	//divide the input query rectangle into even parts, e.g. 2 or 4 parts
+		//	//0~3 for 2d; upper 2|3----10|11;----- YX for 2D, ZYX for 3D, TZYX for 4D--each dim one bit
+		//	//0~3 for 2d; lower 0|1----00|01 ------one dim: less = 0; greater = 1		
 		vector<Rect<T>> qrtcut(nary_num);  //2^nDims parts
 		vector<int> qrtpos(nary_num);  //the qrtcut corresponds to treenode
 
@@ -418,6 +421,14 @@ void QueryBySFC_S<T>::query_approximate2(TreeNode<T> nd, Rect<T> queryrect, vect
 		for (int i = 0; i < ncount; i++)   //final rect number 
 		{
 			TreeNode<T> cNode = currentNode.GetChildNode(qrtpos[i]);
+
+			///////////////////////////////////////////////////////////
+			//check if this child has no data---20180907 
+			//if nodata, no need to check it anymore,just discard this node
+			bool nodata = false;
+			if (nodata == false) continue;
+			////////////////////////////////////////////////////////////
+
 			int rec = cNode.Spatialrelationship(qrtcut[i]);
 			if (rec == 0)
 			{
@@ -430,7 +441,7 @@ void QueryBySFC_S<T>::query_approximate2(TreeNode<T> nd, Rect<T> queryrect, vect
 			{
 				//query_approximate(cNode, qrtcut[i], resultTNode);  //recursive query
 				query_queue.push(NRTuple(cNode, qrtcut[i]));
-			}		
+			}
 		}//end for rect division check
 
 	}///end for queue iteration
@@ -448,10 +459,10 @@ vector<sfc_bigint>  QueryBySFC_S<T>::RangeQueryByRecursive_LNG(Rect<T> queryrect
 
 	root.minPoint.nDims = root.maxPoint.nDims = nDims;
 	for (int i = 0; i < nDims; i++)
-	{		
+	{
 		root.minPoint[i] = 0;
 		root.maxPoint[i] = 1 << mBits;
-		
+
 		queryrect.maxPoint[i] += 1;
 	}
 
@@ -478,9 +489,9 @@ vector<sfc_bigint>  QueryBySFC_S<T>::RangeQueryByRecursive_LNG(Rect<T> queryrect
 
 	for (int i = 0; i < resultTNode.size(); i++)
 	{
-		SFCConversion sfc(nDims,mBits);
+		SFCConversion sfc(nDims, mBits);
 
-		long long node_width = 1 << nDims* (mBits - resultTNode[i].level);//2^(n*(m-l))
+		long long node_width = 1 << nDims * (mBits - resultTNode[i].level);//2^(n*(m-l))
 
 		if (sfc_type == Hilbert) //encoding minPoint
 		{
@@ -534,7 +545,7 @@ vector<sfc_bigint>  QueryBySFC_S<T>::RangeQueryByRecursive_LNG(Rect<T> queryrect
 		//std::sort(node_vals.begin(), node_vals.end());
 		//map_range[node_vals[0]] = node_vals[ncorners-1];
 	}
-	
+
 	/////////////////////////////////////////////////
 	///merg continuous range--->if nranges=0, gap=1; if nranges !=0 ,find the Nth big gap
 	///find the suitable distance dmin
@@ -727,7 +738,7 @@ vector<sfc_bigint>  QueryBySFC_S<T>::RangeQueryByRecursive_LNG_P(Rect<T> queryre
 	size_t node_size = resultTNode.size();
 	sfc_bigint* pvec_minmax = new sfc_bigint[node_size * 2];
 	parallel_for(blocked_range<size_t>(0, node_size, 200), node2range<T>(pvec_minmax, resultTNode, sfc_type, nDims, mBits));
-	
+
 	//sort
 	for (size_t i = 0; i < node_size; ++i)
 	{
@@ -740,7 +751,7 @@ vector<sfc_bigint>  QueryBySFC_S<T>::RangeQueryByRecursive_LNG_P(Rect<T> queryre
 	sfc_bigint dmin = 1;//for full ranges
 	int nsize = map_range.size();
 	if (nranges != 0) //not full ranges---control by nranges N
-	{		
+	{
 		vector<sfc_bigint> vec_dist(nsize - 1);
 
 		itr = map_range.begin();
@@ -763,7 +774,7 @@ vector<sfc_bigint>  QueryBySFC_S<T>::RangeQueryByRecursive_LNG_P(Rect<T> queryre
 
 		//cout << "min gap:" << dmin << endl;
 	}
-	
+
 	//////merge
 	sfc_bigint k1, k2;
 	vector<sfc_bigint> rangevec;
@@ -884,12 +895,12 @@ vector<sfc_bigint>  QueryBySFC_S<T>::RangeQueryByBruteforce_LNG(Rect<T> queryRec
 		}
 
 		//cout << result[i] << "," << result[i + 1] << endl;
-		if (result[i] != (result[i-1] + 1)) //discontinuous
+		if (result[i] != (result[i - 1] + 1)) //discontinuous
 		{
-			rangevec.push_back(result[nstart]); 
-			rangevec.push_back(result[i-1]);
+			rangevec.push_back(result[nstart]);
+			rangevec.push_back(result[i - 1]);
 
-			nstart = i ;
+			nstart = i;
 		}
 	}
 
