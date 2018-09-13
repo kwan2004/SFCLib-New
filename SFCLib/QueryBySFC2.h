@@ -346,6 +346,10 @@ void QueryBySFC_S<T>::query_approximate2(TreeNode<T> nd, Rect<T> queryrect, vect
 				///go down ,go down till the  query rect and the child are on the same scale : equal or intersect
 				if (nchild.Spatialrelationship(qrt) == 0)  //equal: stop
 				{
+					////////////////////////////
+					//check data in this node before put it in results-20180913
+
+					////////////////////////////
 					resultTNode.push_back(nchild);
 					res = 1;
 					break; //break for and while ---to continue queue iteration
@@ -364,7 +368,7 @@ void QueryBySFC_S<T>::query_approximate2(TreeNode<T> nd, Rect<T> queryrect, vect
 			}//end for nary children
 		} while (!res);
 
-		if (res == 1) continue; //here break to continue for (queue iteration)
+		if (res == 1) continue; //equal----here break to continue for (queue iteration)
 		//			
 		//	//divide the input query rectangle into even parts, e.g. 2 or 4 parts
 		//	//0~3 for 2d; upper 2|3----10|11;----- YX for 2D, ZYX for 3D, TZYX for 4D--each dim one bit
