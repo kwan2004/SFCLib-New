@@ -276,7 +276,7 @@ int main(int argc, char* argv[])
 			ptCoord[0] = i;//i
 			ptCoord[1] = j;//j
 
-			sfc_bigint outval = sfc.HilbertEncode(ptCoord);
+			//sfc_bigint outval = sfc.HilbertEncode(ptCoord);
 
 			ptCoord[0] = i;//i
 			ptCoord[1] = j;//j
