@@ -166,9 +166,15 @@ class QueryBySFC_S
 public:
 	int nDims;
 	int mBits;
+
+	map<sfc_bigint, long long>* m_hp;
+	int m_hp_lvls;
+	SFCType m_sfc_type;
+
 private:
 	//void query_approximate(TreeNode<T> nd, Rect<T> queryrect, vector<TreeNode<T>>& resultTNode);
 	void query_approximate2(TreeNode<T> nd, Rect<T> queryrect, vector<TreeNode<T>>& resultTNode, int nranges, int ktimes);
+	bool check_treenode_isnull(TreeNode<T> nd);
 
 public:
 	vector<sfc_bigint>  RangeQueryByBruteforce_LNG(Rect<T> queryRect, SFCType sfc_type);
@@ -179,7 +185,7 @@ public:
 	//vector<string>  RangeQueryByBruteforce_STR(Rect<T, nDims> queryRect, SFCType sfc_type, StringType encode_type);
 	//vector<string>  RangeQueryByRecursive_STR(Rect<T, nDims> queryrect, SFCType sfc_type, StringType encode_type, int nranges, int ktimes);
 
-	QueryBySFC_S(int dims, int bits) :nDims(dims), mBits(bits)
+	QueryBySFC_S(int dims, int bits, map<sfc_bigint, long long>* hp, int hp_lvls, SFCType type) :nDims(dims), mBits(bits), m_hp(hp), m_hp_lvls(hp_lvls), m_sfc_type(type)
 	{	}
 
 
@@ -296,6 +302,36 @@ public:
 //	}
 //}
 
+template<typename T>//check tree node is null in the histogram pyramid
+bool QueryBySFC_S<T>::check_treenode_isnull(TreeNode<T> nd)
+{
+	//int nlvl = nd.level;
+	//Point<T> pt = nd.minPoint;
+	SFCConversion sfc(nDims, nd.level);
+	sfc_bigint val;
+	if (m_sfc_type == Hilbert) //encoding minPoint
+	{
+		val = sfc.HilbertEncode(nd.minPoint);
+	}
+	if (m_sfc_type == Morton)
+	{
+		val = sfc.MortonEncode(nd.minPoint);
+	}
+
+	if (m_hp[nd.level].find(val) == m_hp[nd.level].end())
+	{
+		// not found-- got 1
+		return false;
+	}
+	else
+	{
+		// found- count increment
+		return true;
+	}
+
+	return true;
+}
+
 ///breadth-first traversal in the 2^n-ary tree
 template<typename T>//, int nDims, int mBits
 //void QueryBySFC<T, nDims, mBits>::query_approximate2(TreeNode<T, nDims> nd, Rect<T, nDims> queryrect, vector<TreeNode<T, nDims>>& resultTNode, int nranges, int ktimes)
@@ -328,7 +364,10 @@ void QueryBySFC_S<T>::query_approximate2(TreeNode<T> nd, Rect<T> queryrect, vect
 			///move all the left nodes in the queue to the resuts node vector
 			for (; !query_queue.empty(); query_queue.pop())
 			{
-				resultTNode.push_back(std::get<0>(query_queue.front()));
+				TreeNode<T> nd = std::get<0>(query_queue.front());
+
+				if(check_treenode_isnull(nd) != true) //if no data ,just discard it
+					resultTNode.push_back(nd); //std::get<0>(query_queue.front())
 			}
 
 			break; //now
@@ -348,9 +387,9 @@ void QueryBySFC_S<T>::query_approximate2(TreeNode<T> nd, Rect<T> queryrect, vect
 				{
 					////////////////////////////
 					//check data in this node before put it in results-20180913
+					if (check_treenode_isnull(nchild) != true)  //check not null before put it in results vector
+						resultTNode.push_back(nchild);
 
-					////////////////////////////
-					resultTNode.push_back(nchild);
 					res = 1;
 					break; //break for and while ---to continue queue iteration
 				}
@@ -426,17 +465,13 @@ void QueryBySFC_S<T>::query_approximate2(TreeNode<T> nd, Rect<T> queryrect, vect
 		{
 			TreeNode<T> cNode = currentNode.GetChildNode(qrtpos[i]);
 
-			///////////////////////////////////////////////////////////
-			//check if this child has no data---20180907 
-			//if nodata, no need to check it anymore,just discard this node
-			bool nodata = false;
-			if (nodata == false) continue;
 			////////////////////////////////////////////////////////////
 
 			int rec = cNode.Spatialrelationship(qrtcut[i]);
 			if (rec == 0)
 			{
-				resultTNode.push_back(cNode);  //equal
+				if (check_treenode_isnull(cNode) != true)  //not null before put it in results vector
+					resultTNode.push_back(cNode);  //equal
 			}
 			else if (rec == -1)
 			{
