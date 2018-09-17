@@ -265,13 +265,13 @@ int main(int argc, char* argv[])
 	SFCConversion2 sfc(2, 4);
 	OutputSchema2  trans(2, 4);
 
-	SFCConversion sfc_old(2, 4);
+	SFCConversion sfc_old(2, 1);
 	//OutputSchema2<2, 4> trans;
 
 	int a, b;
-	for (int i = 0; i < 16; i++)
+	for (int i = 0; i < 2; i++)
 	{
-		for (int j = 0; j < 16; j++)
+		for (int j = 0; j < 2; j++)
 		{
 			ptCoord[0] = i;//i
 			ptCoord[1] = j;//j

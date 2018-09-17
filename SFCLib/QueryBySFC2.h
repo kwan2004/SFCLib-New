@@ -305,28 +305,37 @@ public:
 template<typename T>//check tree node is null in the histogram pyramid
 bool QueryBySFC_S<T>::check_treenode_isnull(TreeNode<T> nd)
 {
-	//int nlvl = nd.level;
-	//Point<T> pt = nd.minPoint;
+	if(nd.level >= m_hp_lvls) return false; //more deeper, no histogram in this level,so assume this node has data
+	
 	SFCConversion sfc(nDims, nd.level);
 	sfc_bigint val;
+
+	Point<T> pttemp = nd.minPoint;
+	for (int i = 0; i < nDims; ++i) ///scale the point coordinates
+	{
+		pttemp[i] = pttemp[i]>> (mBits - nd.level);
+	}
+
 	if (m_sfc_type == Hilbert) //encoding minPoint
 	{
-		val = sfc.HilbertEncode(nd.minPoint);
+		val = sfc.HilbertEncode(pttemp);
 	}
 	if (m_sfc_type == Morton)
 	{
-		val = sfc.MortonEncode(nd.minPoint);
+		val = sfc.MortonEncode(pttemp);
 	}
+
+	//cout << "check:" << nd.level<< ","<<val << endl;
 
 	if (m_hp[nd.level].find(val) == m_hp[nd.level].end())
 	{
-		// not found-- got 1
-		return false;
+		// not found--null node
+		return true;
 	}
 	else
 	{
-		// found- count increment
-		return true;
+		// found- not null
+		return false;
 	}
 
 	return true;
@@ -366,7 +375,7 @@ void QueryBySFC_S<T>::query_approximate2(TreeNode<T> nd, Rect<T> queryrect, vect
 			{
 				TreeNode<T> nd = std::get<0>(query_queue.front());
 
-				if(check_treenode_isnull(nd) != true) //if no data ,just discard it
+				if(check_treenode_isnull(nd) == false) //if has data ,queue it
 					resultTNode.push_back(nd); //std::get<0>(query_queue.front())
 			}
 
@@ -387,7 +396,7 @@ void QueryBySFC_S<T>::query_approximate2(TreeNode<T> nd, Rect<T> queryrect, vect
 				{
 					////////////////////////////
 					//check data in this node before put it in results-20180913
-					if (check_treenode_isnull(nchild) != true)  //check not null before put it in results vector
+					if (check_treenode_isnull(nchild) == false)  //check if null before put it in results vector
 						resultTNode.push_back(nchild);
 
 					res = 1;
@@ -470,7 +479,7 @@ void QueryBySFC_S<T>::query_approximate2(TreeNode<T> nd, Rect<T> queryrect, vect
 			int rec = cNode.Spatialrelationship(qrtcut[i]);
 			if (rec == 0)
 			{
-				if (check_treenode_isnull(cNode) != true)  //not null before put it in results vector
+				if (check_treenode_isnull(cNode) == false)  //not null before put it in results vector
 					resultTNode.push_back(cNode);  //equal
 			}
 			else if (rec == -1)
@@ -542,7 +551,7 @@ vector<sfc_bigint>  QueryBySFC_S<T>::RangeQueryByRecursive_LNG(Rect<T> queryrect
 		}
 
 		r_start = val - val % node_width;
-		r_end = r_start + node_width - 1;
+		r_end = r_start + node_width - 1;// cout << r_start << "," << r_end << endl;
 		map_range[r_start] = r_end;
 
 		//if (resultTNode[i].level == mBits) //leaf node--just one point
@@ -769,10 +778,8 @@ vector<sfc_bigint>  QueryBySFC_S<T>::RangeQueryByRecursive_LNG_P(Rect<T> queryre
 	}
 	//cout << resultTNode.size() << endl;
 
-
 	map<sfc_bigint, sfc_bigint, less<sfc_bigint>> map_range;
 	map<sfc_bigint, sfc_bigint, less<sfc_bigint>>::iterator itr;
-
 
 	size_t node_size = resultTNode.size();
 	sfc_bigint* pvec_minmax = new sfc_bigint[node_size * 2];
