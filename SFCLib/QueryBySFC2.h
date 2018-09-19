@@ -760,6 +760,8 @@ vector<sfc_bigint>  QueryBySFC_S<T>::RangeQueryByRecursive_LNG_P(Rect<T> queryre
 	TreeNode<T> root;  //root node
 	root.level = 0;
 	root.nDims = nDims;
+	root.minPoint.nDims = root.maxPoint.nDims = nDims;
+
 	for (int i = 0; i < nDims; i++)
 	{
 		root.minPoint[i] = 0;

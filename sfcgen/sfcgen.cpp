@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
 
 		if (strcmp(argv[i], "-onlysfc") == 0)//output onlye sfc code
 		{
-			i++;
+			//i++;
 			bisonlysfc = true; //(bool)atoi(argv[i]);
 			continue;
 		}
