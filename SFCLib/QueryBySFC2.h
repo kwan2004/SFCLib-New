@@ -305,7 +305,8 @@ public:
 template<typename T>//check tree node is null in the histogram pyramid
 bool QueryBySFC_S<T>::check_treenode_isnull(TreeNode<T> nd)
 {
-	if(nd.level >= m_hp_lvls) return false; //more deeper, no histogram in this level,so assume this node has data
+	if(nd.level >= m_hp_lvls) 
+		return false; //more deeper, no histogram in this level,so assume this node has data
 	
 	SFCConversion sfc(nDims, nd.level);
 	sfc_bigint val;

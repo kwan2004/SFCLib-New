@@ -72,6 +72,32 @@ int main(int argc, char* argv[])
 	//if (argc % 2 != 1) return 0; //attribute pair plus exe_name	
 
 #ifdef SFC_GEN_TEST
+	///2D histogram
+	Point<double> pt20(2);
+	pt20[0] = 39167.8789;//1010
+	pt20[1] = 417436.52;//1011
+
+	double delta20[3] = { 39110, 417366, 0 };
+	double  scale20[3] = { 40, 40, 1 }; //100, 100, 1000
+
+	CoordTransform<double, long> cotrans20(2);
+	cotrans20.SetTransform(delta20, scale20);
+
+	Point<long> pt21 = cotrans20.Transform(pt20);
+	for (int i = 13; i >= 0; i--)
+	{
+		SFCConversion sfctest20(2, i);
+
+		Point<long> pt22;
+		pt22[0] = pt21[0] >> (13-i  );
+		pt22[1] = pt21[1] >> (13 -i );
+
+		sfc_bigint val = sfctest20.HilbertEncode(pt22);
+
+		cout <<"lvl:"<<i<< "," << pt22[0] << "," << pt22[1] <<"----" << val << endl;
+	}
+
+
 	////////5D taxi tests
 	//347068803,-73.9890213,40.7215385,-73.9889603,40.7216988,16793554232693735
 	Point<double> pt7(5);
